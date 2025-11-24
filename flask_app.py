@@ -14,7 +14,7 @@ import datetime
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRETE = os.getenv("CLIENT_SECRETE")
-REDIRECT_URI = "https://wangbu.pythonanywhere.com"
+REDIRECT_URI = "https://wangbu.pythonanywhere.com:5000/callback"
 
 SCOPES = [
     "user-read-private",

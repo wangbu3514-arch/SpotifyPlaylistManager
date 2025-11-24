@@ -10,7 +10,7 @@ from dotenv import load_dotenv, set_key
 
 CLIENT_ID = os.getenv("CLIENT_ID"),
 CLIENT_SECRETE = os.getenv("CLIENT_SECRETE"),
-REDIRECT_URI = "http://wangbu.pythonanywhere.com/callback"
+REDIRECT_URI = "https://wangbu.pythonanywhere.com:5000/callback"
 
 #constitue authorization scope
 scopes = [  "user-read-private",
