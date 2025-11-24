@@ -185,8 +185,8 @@ def run_schedule():
         schedule.run_pending()
         time.sleep(1)           # prevent overuse CPU
 
-if __name__ == "__main__":
-
-    # scheduler_thread = threading.Thread(target=run_schedule, daemon=True)
-    # scheduler_thread.start()
-    app.run(host="0.0.0.0", port=5000)
+# if __name__ == "__main__":
+#
+#     # scheduler_thread = threading.Thread(target=run_schedule, daemon=True)
+#     # scheduler_thread.start()
+#     app.run(host="0.0.0.0", port=5000)
