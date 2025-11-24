@@ -10,11 +10,11 @@ from SpotifyPlaylistManager import SpotifyPlaylistManager
 from flask import Flask, request, jsonify, render_template, redirect, url_for
 import datetime
 
-load_dotenv()
+#load_dotenv()
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRETE = os.getenv("CLIENT_SECRETE")
-REDIRECT_URI = "http://127.0.0.1:5000/callback"
+REDIRECT_URI = "https://wangbu.pythonanywhere.com"
 
 SCOPES = [
     "user-read-private",
@@ -85,8 +85,6 @@ def callback():
     os.environ["REFRESH_TOKEN"] = token_info["refresh_token"]
 
     return render_template("ai.html", message="Spotify authenticated.")
-
-load_dotenv()
 
 auth_info = {
     "access_token": os.getenv("ACCESS_TOKEN"),
@@ -189,6 +187,6 @@ def run_schedule():
 
 if __name__ == "__main__":
 
-    scheduler_thread = threading.Thread(target=run_schedule, daemon=True)
-    scheduler_thread.start()
+    # scheduler_thread = threading.Thread(target=run_schedule, daemon=True)
+    # scheduler_thread.start()
     app.run(host="0.0.0.0", port=5000)
