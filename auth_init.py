@@ -10,7 +10,6 @@ from dotenv import load_dotenv, set_key
 
 CLIENT_ID = os.getenv("CLIENT_ID"),
 CLIENT_SECRETE = os.getenv("CLIENT_SECRETE"),
-
 REDIRECT_URI = "http://127.0.0.1:5000/callback"
 
 #constitue authorization scope

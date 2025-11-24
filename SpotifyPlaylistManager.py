@@ -349,6 +349,7 @@ class SpotifyPlaylistManager:
 
         if resp.status_code == 200:
             data = resp.json()
+            print(data)
             return data["tracks"]["items"][0]["uri"]
 
         elif resp.status_code == 401:
@@ -453,6 +454,7 @@ class SpotifyPlaylistManager:
             re_request_template = (
                 f"The following tracks were unobtainable on Spotify: {unobtainable_tracks}.\n"
                 "Please replace each unavailable track with a similar one "
+                "Please keep available tracks included in the list."
                 "(in mood, genre, and era) that exists on Spotify.\n\n"
 
                 "Respond strictly in the following JSON format:\n"
@@ -472,7 +474,7 @@ class SpotifyPlaylistManager:
 
             response = client.responses.create(
                 model="gpt-4.1",
-                input=q_text + re_request_template
+                input=re_request_template
             )
             print(response.output_text)
             json_data = json.loads(response.output_text)
@@ -492,11 +494,11 @@ class SpotifyPlaylistManager:
 
     def get_playlist_from_chart(self, period, limit):
         """
-        :param period: 'weekly', 'monthly', 'all-time' 중 하나
-        :param limit: 상위 몇 곡을 출력할지 (int)
-        :return: 상위 곡들의 정보를 출력
+        :param period: 'weekly', 'monthly', 'all-time'
+        :param limit: int
+        :return: JSON 호환 리스트: [{"Track": ..., "Artist": ..., "Playtime": ...}, ...]
         """
-        # period에 따라 테이블명 선택
+
         table_map = {
             "weekly": "Weekly_Track_Record",
             "monthly": "Monthly_Track_Record",
@@ -504,6 +506,7 @@ class SpotifyPlaylistManager:
         }
 
         table_name = table_map.get(period.lower())
+
         conn = sqlite3.connect("music_data.db")
         cursor = conn.cursor()
 
@@ -515,21 +518,24 @@ class SpotifyPlaylistManager:
         """
         cursor.execute(query, (limit,))
         results = cursor.fetchall()
-
         conn.close()
 
         if not results:
-            print(f"⚠️ {table_name} no data in the table. please check DB")
-            return
+            print(f"⚠️ {table_name} has no data.")
+            return []
 
-        print(f"\n🎵 {period.capitalize()} Top {limit} Tracks")
-        print("-" * 45)
-        for i, (track, artist, playtime) in enumerate(results, start=1):
-            print(f"{i:2d}. {track} — {artist} ({playtime} sec)")
+        # 결과를 JSON 호환 리스트로 변환
+        chart_data = [
+            {"Track": track, "Artist": artist, "Playtime": playtime}
+            for (track, artist, playtime) in results
+        ]
 
-    def generate_playlist_from_chart(self, period):
+        return chart_data
+
+    def generate_playlist_from_chart(self, period, limit):
         """
-        :param period: 'weekly', 'monthly', 'all-time' 중 하나
+        :param period: str, 'weekly', 'monthly', 'all-time' 중 하나
+               ,limit : int, number of top-n songs.
         :return: create playlist in Spotify app
         """
         table_map = {
@@ -545,7 +551,7 @@ class SpotifyPlaylistManager:
             SELECT Track, Artist 
             FROM {table_name}
             ORDER BY Playtime DESC
-            LIMIT 30;
+            LIMIT {limit};
         """)
         results = cursor.fetchall()
         conn.close()

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Chart</title>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: #f7f7f7;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        form {
+            width: 80%;
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        select, input[type="number"] {
+            width: 100%;
+            margin-top: 8px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 25px;
+            width: 100%;
+            padding: 14px;
+            background: #67d391;
+            border: none;
+            border-radius: 6px;
+            font-size: 17px;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #56c07f;
+        }
+
+        .chart-box {
+            width: 80%;
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .chart-entry {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+
+        .message-box {
+            width: 80%;
+            max-width: 700px;
+            margin: 20px auto;
+            background: #fff3d2;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 5px solid #ffcc45;
+            font-size: 15px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <h1>Track Chart</h1>
+
+    <!-- Load Chart Form -->
+    <form action="/chart" method="get">
+        <label>Period:</label>
+        <select name="period">
+            <option value="weekly" {% if period=='weekly' %}selected{% endif %}>Weekly</option>
+            <option value="monthly" {% if period=='monthly' %}selected{% endif %}>Monthly</option>
+            <option value="all-time" {% if period=='all-time' %}selected{% endif %}>All-time</option>
+        </select>
+
+        <label>Limit:</label>
+        <input type="number" name="limit" value="{{ limit or 10 }}" min="1" max="50">
+
+        <button type="submit">Load Chart</button>
+    </form>
+
+    {% if chart %}
+    <div class="chart-box">
+        {% for row in chart %}
+            <p class="chart-entry">{{ loop.index }}. {{ row.Track }} — {{ row.Artist }} ({{ row.Playtime }}ms)</p>
+        {% endfor %}
+    </div>
+
+    <!-- Generate Playlist From Chart -->
+    <form action="/chart" method="post">
+        <input type="hidden" name="period" value="{{ period }}">
+        <input type="hidden" name="limit" value="{{ limit }}">
+        <button type="submit">Generate Playlist Based on This Chart</button>
+    </form>
+    {% endif %}
+
+    {% if message %}
+    <div class="message-box">
+        {{ message }}
+    </div>
+    {% endif %}
+
+    <script>
+        history.replaceState({}, "", "/chart");
+    </script>
+
+</body>
+</html>
